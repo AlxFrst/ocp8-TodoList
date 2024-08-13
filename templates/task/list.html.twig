@@ -1,51 +1,80 @@
 {% extends 'base.html.twig' %}
 
-{% block header_img %}<img class="slide-image" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">
+{% block header_img %}
+	<img class="slide-image" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">
 {% endblock %}
 
 {% block body %}
-	<a href="{{ path('task_create') }}" class="btn btn-info pull-right">Créer une tâche</a>
-	<div class="row">
+	<div class="mb-4 text-end">
+		<a href="{{ path('task_create') }}" class="btn btn-info">Créer une tâche</a>
+	</div>
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
 		{% for task in tasks %}
-			<div class="col-sm-4 col-lg-4 col-md-4">
-				<div class="thumbnail">
-					<div class="caption">
-						<h4 class="pull-right">
-							{% if task.isDone %}
-								<span class="glyphicon glyphicon-ok"></span>
+			<div class="col" style="margin: 10px;">
+				<div class="card h-100 d-flex flex-column border-primary" style="background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border-radius: 15px; padding: 15px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+					<div class="card-body flex-grow-1">
+						<h5 class="card-title">
+							{% if is_granted('task_edit', task) %}
+								<a href="{{ path('task_edit', {'id' : task.id }) }}" style="color: #000000;">{{ task.title }}</a>
 							{% else %}
-								<span class="glyphicon glyphicon-remove"></span>
+								<span style="color: #000000;">{{ task.title }}</span>
 							{% endif %}
-						</h4>
-						{% if is_granted('task_edit', task) %}
-							<h4>
-								<a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a>
-							</h4>
-						{% else %}
-							<h4>{{ task.title }}</h4>
-						{% endif %}
-						<p>{{ task.content }}</p>
+						</h5>
+						<p class="card-text" style="color: #000000;">{{ task.content }}</p>
+						<p class="card-text">
+							<small style="color: #000000;">
+								Créé par :
+								{% if task.user %}
+									{{ task.user.username }}
+									<br>
+									<strong>Rôle :</strong>
+									{% for role in task.user.roles %}
+										{% if role == 'ROLE_ADMIN' %}
+											<span class="badge bg-danger">Admin</span>
+										{% elseif role == 'ROLE_USER' %}
+											<span class="badge bg-primary">Utilisateur</span>
+										{% elseif role == 'ROLE_ANONYMOUS' %}
+											<span class="badge bg-secondary">Anonyme</span>
+										{% endif %}
+									{% endfor %}
+								{% else %}
+									Anonyme
+								{% endif %}
+							</small>
+						</p>
+						<p class="card-text">
+							<small>
+								{% if task.isDone %}
+									<span class="badge bg-success">Terminée</span>
+								{% else %}
+									<span class="badge bg-warning text-dark">En cours</span>
+								{% endif %}
+							</small>
+						</p>
 					</div>
-					<div>
-						<form action="{{ path('task_toggle', {'id' : task.id }) }}">
-							<button class="btn btn-success btn-sm pull-right">
+					<div class="card-footer mt-auto d-flex justify-content-between">
+						<form action="{{ path('task_toggle', {'id' : task.id }) }}" method="post" class="d-inline">
+							<button class="btn btn-sm btn-success">
 								{% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée
 								{% endif %}
 							</button>
 						</form>
 						{% if is_granted("task_delete", task) %}
-							<form action="{{ path('task_delete', {'id' : task.id }) }}">
-								<button class="btn btn-danger btn-sm pull-right">Supprimer</button>
+							<form action="{{ path('task_delete', {'id' : task.id }) }}" method="post" class="d-inline">
+								<button class="btn btn-sm btn-danger">Supprimer</button>
 							</form>
 						{% endif %}
 					</div>
 				</div>
 			</div>
 		{% else %}
-			<div class="alert alert-warning" role="alert">
-				Il n'y a pas encore de tâche enregistrée.
-				<a href="{{ path('task_create') }}" class="btn btn-warning pull-right">Créer une tâche</a>
+			<div class="col-12">
+				<div class="alert alert-warning" role="alert">
+					Il n'y a pas encore de tâche enregistrée.
+					<a href="{{ path('task_create') }}" class="btn btn-warning">Créer une tâche</a>
+				</div>
 			</div>
 		{% endfor %}
 	</div>
 {% endblock %}
+
