@@ -34,6 +34,7 @@ class UserFixtures extends Fixture
         $userAdmin->setUsername('admin');
         $userAdmin->setEmail('admin@admin.com');
         $userAdmin->setPassword($passwordEncode);
+        $userAdmin->setRoles(['ROLE_ADMIN']);
 
         $manager->persist($userAdmin);
         $this->addReference(self::ADMIN_USER_REFERENCE, $userAdmin);
@@ -48,6 +49,7 @@ class UserFixtures extends Fixture
             $user->setUsername($this->faker->userName());
             $user->setEmail($this->faker->email());
             $user->setPassword($passwordEncode);
+            $user->setRoles(['ROLE_USER']);
 
             $manager->persist($user);
             $this->addReference(self::USER_REFERENCE . $nbUser, $user);
@@ -60,6 +62,7 @@ class UserFixtures extends Fixture
             $userAnonymous->setUsername($this->faker->userName());
             $userAnonymous->setEmail('anonymous-' . $nbUserAnonymous . '@anonymous.com');
             $userAnonymous->setPassword($passwordEncode);
+            $userAnonymous->setRoles(['ROLE_ANONYMOUS']);
 
             $manager->persist($userAnonymous);
             $this->addReference(self::ANONYMOUS_USER_REFERENCE . $nbUserAnonymous, $userAnonymous);
