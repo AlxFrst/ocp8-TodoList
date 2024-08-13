@@ -1,0 +1,13 @@
+services:
+  mariadb:
+    image: mariadb:10.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
