@@ -1,14 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block header_title %}<h1>Créer un utilisateur</h1>{% endblock %}
+{% block header_title %}
+	<div class="text-center my-4">
+		<h1>Créer un utilisateur</h1>
+	</div>
+{% endblock %}
 {% block header_img %}{% endblock %}
 
 {% block body %}
-    <div class="row">
-        {{ form_start(form, {'action' : path('user_create')}) }}
-            {{ form_widget(form) }}
+	<div class="container my-5">
+		<div class="row justify-content-center">
+			<div class="col-md-8">
+				<div class="card shadow-sm">
+					<div class="card-header bg-primary text-white text-center">
+						<h4>Nouveau Utilisateur</h4>
+					</div>
+					<div class="card-body">
+						{{ form_start(form, {'action' : path('user_create')}) }}
+						<div class="mb-3">
+							{{ form_label(form.username, 'Nom d\'utilisateur', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom d\'utilisateur'}}) }}
+							{{ form_errors(form.username) }}
+						</div>
+						<div class="mb-3">
+							{{ form_label(form.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
+							{{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'adresse email'}}) }}
+                                {{ form_errors(form.email) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(form.password, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.password, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le mot de passe'}}) }}
+                                {{ form_errors(form.password) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_label(form.roles, 'Rôles', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.roles) }}
+                            </div>
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-success">Ajouter l'utilisateur</button>
+                            </div>
+                        {{ form_end(form) }}
+						</div>
+					</div>
+					<div class="mt-4 text-center">
+						<a href="{{ path('user_list') }}" class="btn btn-secondary">Retour à la liste des utilisateurs</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endblock %}
 
-            <button type="submit" class="btn btn-success pull-right">Ajouter</button>
-        {{ form_end(form) }}
-    </div>
-{% endblock %}
