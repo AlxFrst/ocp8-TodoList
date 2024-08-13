@@ -6,10 +6,9 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 class TaskController extends AbstractController
@@ -19,7 +18,7 @@ class TaskController extends AbstractController
      */
     public function listAction(TaskRepository $taskRepository)
     {
-        $tasks = $taskRepository->findAll();
+        $tasks = $taskRepository->findBy(['isDone' => 0]);
         return $this->render('task/list.html.twig', ['tasks' => $tasks]);
     }
 
@@ -46,9 +45,6 @@ class TaskController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $user = $security->getUser();
-            if (empty($user)){
-                throw new Exception('Vous ne pouvez pas créer de tâches sans être connecté');
-            }
             $task->setUser($user);
             $entityManager->persist($task);
             $entityManager->flush();
@@ -66,6 +62,7 @@ class TaskController extends AbstractController
      */
     public function editAction(Task $task, Request $request)
     {
+        $this->denyAccessUnlessGranted('task_edit', $task);
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -102,6 +99,7 @@ class TaskController extends AbstractController
      */
     public function deleteTaskAction(Task $task)
     {
+        $this->denyAccessUnlessGranted('task_delete', $task);
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
