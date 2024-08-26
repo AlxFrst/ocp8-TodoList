@@ -47,4 +47,12 @@ class TaskRepository extends ServiceEntityRepository
         ;
     }
     */
+    public function findExpiredTasks()
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.deadline < :now')
+            ->setParameter('now', new \DateTime())
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -10,14 +10,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use App\Service\ExpiredTaskService;
 
 class TaskController extends AbstractController
 {
+    private $expiredTaskService;
+    public function __construct(ExpiredTaskService $expiredTaskService)
+    {
+        $this->expiredTaskService = $expiredTaskService;
+    }
     /**
      * @Route("/tasks", name="task_list")
      */
     public function listAction(TaskRepository $taskRepository)
     {
+        // Supprime les tâches expirées
+        $deletedCount = $this->expiredTaskService->deleteExpiredTasks();
+
+        // Si des tâches ont été supprimées, ajoutez un message flash
+        if ($deletedCount > 0) {
+            $this->addFlash('info', "$deletedCount tâche(s) expirée(s) ont été supprimées.");
+        }
+
         $tasks = $taskRepository->findBy(['isDone' => 0]);
         return $this->render('task/list.html.twig', ['tasks' => $tasks]);
     }
@@ -27,6 +41,14 @@ class TaskController extends AbstractController
      */
     public function listActionDone(TaskRepository $taskRepository)
     {
+        // Supprime les tâches expirées
+        $deletedCount = $this->expiredTaskService->deleteExpiredTasks();
+
+        // Si des tâches ont été supprimées, ajoutez un message flash
+        if ($deletedCount > 0) {
+            $this->addFlash('info', "$deletedCount tâche(s) expirée(s) ont été supprimées.");
+        }
+
         $tasks = $taskRepository->findBy(['isDone' => 1]);
         return $this->render('task/list.html.twig', ['tasks' => $tasks]);
     }
