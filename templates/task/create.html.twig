@@ -22,7 +22,12 @@
 						</div>
 						<div class="mb-3">
 							{{ form_label(form.deadline, 'Date limite', {'label_attr': {'class': 'form-label'}}) }}
-							{{ form_widget(form.deadline, {'attr': {'class': 'form-control'}}) }}
+							{{ form_widget(form.deadline, {
+								'attr': {
+									'class': 'form-control',
+									'id': 'task_deadline'
+								}
+							}) }}
 							{{ form_errors(form.deadline) }}
 						</div>
 						<div class="text-end">
@@ -37,5 +42,23 @@
 			</div>
 		</div>
 	</div>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+var deadlineField = document.getElementById('task_deadline');
+
+// Définir la date minimum à aujourd'hui
+var today = new Date().toISOString().split('T')[0];
+deadlineField.setAttribute('min', today);
+
+// Vérifier la date à chaque changement
+deadlineField.addEventListener('change', function () {
+if (this.value < today) {
+alert('La date limite ne peut pas être dans le passé.');
+this.value = '';
+}
+});
+});
+</script>
+
 {% endblock %}
 
