@@ -46,6 +46,11 @@ class Task
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deadline;
+
     public function __construct()
     {
         $this->createdAt = new \Datetime();
@@ -118,6 +123,17 @@ class Task
     {
         $this->user = $user;
 
+        return $this;
+    }
+
+    public function getDeadline(): ?\DateTimeInterface
+    {
+        return $this->deadline;
+    }
+
+    public function setDeadline(?\DateTimeInterface $deadline): self
+    {
+        $this->deadline = $deadline;
         return $this;
     }
 }

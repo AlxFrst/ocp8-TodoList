@@ -21,6 +21,12 @@
 							{% endif %}
 						</h5>
 						<p class="card-text" style="color: #000000;">{{ task.content }}</p>
+						{# add deadline #}
+						<p class="card-text" style="color: #000000;">
+							{% if task.deadline %}
+								<small>Date limite : <strong>{{ task.deadline|date('d/m/Y') }}</strong></small>
+							{% endif %}
+						</p>
 						<p class="card-text">
 							<small style="color: #000000;">
 								Créé par :

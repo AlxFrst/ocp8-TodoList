@@ -20,6 +20,11 @@
 							{{ form_widget(form.content, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la description de la tâche'}}) }}
 							{{ form_errors(form.content) }}
 						</div>
+						<div class="mb-3">
+							{{ form_label(form.deadline, 'Date limite', {'label_attr': {'class': 'form-label'}}) }}
+							{{ form_widget(form.deadline, {'attr': {'class': 'form-control'}}) }}
+							{{ form_errors(form.deadline) }}
+						</div>
 						<div class="text-end">
 							<button type="submit" class="btn btn-success">Ajouter la tâche</button>
 						</div>
