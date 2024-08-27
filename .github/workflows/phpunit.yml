@@ -1,0 +1,29 @@
+name: PHPUnit Tests
+
+on: [push, pull_request]
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      uses: php-actions/composer@v6
+    
+    - name: PHPUnit Tests
+      uses: php-actions/phpunit@v3
+      with:
+        configuration: phpunit.xml
+        memory_limit: 256M
+        bootstrap: vendor/autoload.php
+        args: --coverage-clover=coverage.xml
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
