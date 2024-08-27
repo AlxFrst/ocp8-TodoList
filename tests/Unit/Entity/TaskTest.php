@@ -8,32 +8,38 @@ use PHPUnit\Framework\TestCase;
 
 class TaskTest extends TestCase
 {
+    private Task $task;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->task = new Task();
+    }
+
     public function testTaskCreationWithUser()
     {
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn(1);
         $user->method('getUsername')->willReturn('john_doe');
 
-        $task = new Task();
-        $task->setTitle('Test Task');
-        $task->setContent('This is a test task.');
-        $task->setUser($user);
+        $this->task->setTitle('Test Task');
+        $this->task->setContent('This is a test task.');
+        $this->task->setUser($user);
 
-        $this->assertEquals('Test Task', $task->getTitle());
-        $this->assertEquals('This is a test task.', $task->getContent());
-        $this->assertSame($user, $task->getUser());
-        $this->assertEquals('john_doe', $task->getUser()->getUsername());
+        $this->assertEquals('Test Task', $this->task->getTitle());
+        $this->assertEquals('This is a test task.', $this->task->getContent());
+        $this->assertSame($user, $this->task->getUser());
+        $this->assertEquals('john_doe', $this->task->getUser()->getUsername());
     }
 
     public function testTaskCreationWithoutUser()
     {
-        $task = new Task();
-        $task->setTitle('Anonymous Task');
-        $task->setContent('This is an anonymous task.');
+        $this->task->setTitle('Anonymous Task');
+        $this->task->setContent('This is an anonymous task.');
 
-        $this->assertEquals('Anonymous Task', $task->getTitle());
-        $this->assertEquals('This is an anonymous task.', $task->getContent());
-        $this->assertNull($task->getUser());
+        $this->assertEquals('Anonymous Task', $this->task->getTitle());
+        $this->assertEquals('This is an anonymous task.', $this->task->getContent());
+        $this->assertNull($this->task->getUser());
     }
 
     public function testCannotChangeTaskAuthor()
@@ -41,41 +47,59 @@ class TaskTest extends TestCase
         $user1 = $this->createMock(User::class);
         $user2 = $this->createMock(User::class);
 
-        $task = new Task();
-        $task->setUser($user1);
-
-        $this->assertSame($user1, $task->getUser());
+        $this->task->setUser($user1);
+        $this->assertSame($user1, $this->task->getUser());
 
         // Tentative de changement d'auteur
-        $task->setUser($user2);
+        $this->task->setUser($user2);
 
         // Vérification que l'auteur n'a pas changé
-        $this->assertSame($user1, $task->getUser());
-        $this->assertNotSame($user2, $task->getUser());
+        $this->assertSame($user1, $this->task->getUser());
+        $this->assertNotSame($user2, $this->task->getUser());
     }
 
     public function testTaskToggle()
     {
-        $task = new Task();
-        
-        // Par défaut, la tâche ne devrait pas être marquée comme faite
-        $this->assertFalse($task->isDone());
+        $this->assertFalse($this->task->isDone());
+        $this->assertFalse($this->task->getIsDone());
 
-        // Basculer l'état de la tâche
-        $task->toggle(true);
-        $this->assertTrue($task->isDone());
+        $this->task->toggle(true);
+        $this->assertTrue($this->task->isDone());
+        $this->assertTrue($this->task->getIsDone());
 
-        // Basculer à nouveau
-        $task->toggle(false);
-        $this->assertFalse($task->isDone());
+        $this->task->toggle(false);
+        $this->assertFalse($this->task->isDone());
+        $this->assertFalse($this->task->getIsDone());
+
+        $this->task->setIsDone(true);
+        $this->assertTrue($this->task->getIsDone());
     }
 
     public function testTaskCreationDate()
     {
-        $task = new Task();
-        $createdAt = $task->getCreatedAt();
-
+        $createdAt = $this->task->getCreatedAt();
         $this->assertInstanceOf(\DateTimeInterface::class, $createdAt);
-        $this->assertEqualsWithDelta(new \DateTime(), $createdAt, 1); // 1 seconde de tolérance
+        $this->assertEqualsWithDelta(new \DateTime(), $createdAt, 1);
+
+        $newDate = new \DateTime('2023-01-01');
+        $this->task->setCreatedAt($newDate);
+        $this->assertEquals($newDate, $this->task->getCreatedAt());
+    }
+
+    public function testTaskId()
+    {
+        $this->assertNull($this->task->getId());
+    }
+
+    public function testTaskDeadline()
+    {
+        $this->assertNull($this->task->getDeadline());
+
+        $deadline = new \DateTime('tomorrow');
+        $this->task->setDeadline($deadline);
+        $this->assertEquals($deadline, $this->task->getDeadline());
+
+        $this->task->setDeadline(null);
+        $this->assertNull($this->task->getDeadline());
     }
 }

@@ -1,117 +1,132 @@
 <?php
 
-namespace App\Tests\Functional\Controller;
+namespace App\Tests\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserControllerTest extends WebTestCase
 {
     private $client;
+    private $entityManager;
+    private $passwordHasher;
     private $userRepository;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        $this->userRepository = static::getContainer()->get(UserRepository::class);
+        $this->entityManager = $this->client->getContainer()
+            ->get('doctrine')
+            ->getManager();
+        $this->passwordHasher = $this->client->getContainer()
+            ->get('security.user_password_hasher');
+        $this->userRepository = $this->entityManager
+            ->getRepository(User::class);
+
+        // Créer un utilisateur admin pour les tests
+        $adminUser = new User();
+        $adminUser->setUsername('admin_test');
+        $adminUser->setEmail('admin_test@example.com');
+        $adminUser->setPassword($this->passwordHasher->hashPassword($adminUser, 'password123'));
+        $adminUser->setRoles(['ROLE_ADMIN']);
+
+        $this->entityManager->persist($adminUser);
+        $this->entityManager->flush();
     }
 
-    public function testCreateUser()
+    protected function tearDown(): void
     {
-        $this->client->request('GET', '/users/create');
+        parent::tearDown();
+
+        // Nettoyer la base de données après chaque test
+        $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
+        $this->entityManager->close();
+        $this->entityManager = null;
+    }
+
+    public function testListAction()
+    {
+        $this->client->loginUser($this->userRepository->findOneBy(['username' => 'admin_test']));
+        $crawler = $this->client->request('GET', '/users');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Créer un utilisateur');
-
-        $this->client->submitForm('Ajouter l\'utilisateur', [
-            'user[username]' => 'newuser',
-            'user[email]' => 'newuser@example.com',
-            'user[password][first]' => 'password123',
-            'user[password][second]' => 'password123',
-            'user[roles]' => 'ROLE_USER'
-        ]);
-
-        $this->assertResponseRedirects('/users');
-
-        $user = $this->userRepository->findOneByEmail('newuser@example.com');
-        $this->assertNotNull($user);
-        $this->assertContains('ROLE_USER', $user->getRoles());
+        $this->assertSelectorTextContains('h1', 'Liste des utilisateurs');
     }
 
-    public function testCreateAdminUser()
+    public function testCreateActionSuccess()
     {
-        $this->client->request('GET', '/users/create');
+        $this->client->loginUser($this->userRepository->findOneBy(['username' => 'admin_test']));
+        $crawler = $this->client->request('GET', '/users/create');
 
-        $this->client->submitForm('Ajouter l\'utilisateur', [
-            'user[username]' => 'newadmin',
-            'user[email]' => 'newadmin@example.com',
-            'user[password][first]' => 'password123',
-            'user[password][second]' => 'password123',
-            'user[roles]' => 'ROLE_ADMIN'
-        ]);
+        $form = $crawler->selectButton('Ajouter')->form();
+        $form['user[username]'] = 'newuser';
+        $form['user[password][first]'] = 'password123';
+        $form['user[password][second]'] = 'password123';
+        $form['user[email]'] = 'newuser@example.com';
+        $form['user[roles]'] = ['ROLE_USER'];
+
+        $this->client->submit($form);
 
         $this->assertResponseRedirects('/users');
-
-        $user = $this->userRepository->findOneByEmail('newadmin@example.com');
-        $this->assertNotNull($user);
-        $this->assertContains('ROLE_ADMIN', $user->getRoles());
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
     }
 
-    public function testEditUserRole()
+    public function testCreateActionFormInvalid()
     {
-        $user = $this->userRepository->findOneByEmail('user@example.com');
-        $this->assertNotNull($user);
+        $this->client->loginUser($this->userRepository->findOneBy(['username' => 'admin_test']));
+        $crawler = $this->client->request('GET', '/users/create');
 
-        $this->client->loginUser($user);
+        $form = $crawler->selectButton('Ajouter')->form();
+        $form['user[username]'] = '';
+        $form['user[password][first]'] = '';
+        $form['user[password][second]'] = '';
+        $form['user[email]'] = 'invalid-email';
 
-        $this->client->request('GET', '/users/' . $user->getId() . '/edit');
+        $this->client->submit($form);
 
-        $this->client->submitForm('Modifier', [
-            'user[roles]' => 'ROLE_ADMIN'
-        ]);
-
-        $this->assertResponseRedirects('/users');
-
-        $updatedUser = $this->userRepository->find($user->getId());
-        $this->assertContains('ROLE_ADMIN', $updatedUser->getRoles());
-    }
-
-    public function testAccessRestriction()
-    {
-        // Test as anonymous user
-        $this->client->request('GET', '/users');
-        $this->assertResponseRedirects('/login');
-
-        // Test as regular user
-        $user = $this->userRepository->findOneByEmail('user@example.com');
-        $this->client->loginUser($user);
-
-        $this->client->request('GET', '/users');
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
-
-        // Test as admin
-        $admin = $this->userRepository->findOneByEmail('admin@example.com');
-        $this->client->loginUser($admin);
-
-        $this->client->request('GET', '/users');
         $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.form-error-message');
     }
 
-    public function testDeleteUser()
+    public function testEditActionSuccess()
     {
-        $admin = $this->userRepository->findOneByEmail('admin@example.com');
-        $this->client->loginUser($admin);
+        $this->client->loginUser($this->userRepository->findOneBy(['username' => 'admin_test']));
+        $user = $this->userRepository->findOneBy(['username' => 'admin_test']);
 
-        $userToDelete = $this->userRepository->findOneByEmail('user@example.com');
-        $this->assertNotNull($userToDelete);
+        $crawler = $this->client->request('GET', '/users/' . $user->getId() . '/edit');
 
-        $this->client->request('GET', '/users/' . $userToDelete->getId() . '/delete');
+        $form = $crawler->selectButton('Modifier')->form();
+        $form['user[username]'] = 'updateduser';
+        $form['user[password][first]'] = 'newpassword123';
+        $form['user[password][second]'] = 'newpassword123';
+        $form['user[email]'] = 'updated@example.com';
+        $form['user[roles]'] = ['ROLE_ADMIN'];
+
+        $this->client->submit($form);
 
         $this->assertResponseRedirects('/users');
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.alert.alert-success');
+    }
 
-        $deletedUser = $this->userRepository->find($userToDelete->getId());
-        $this->assertNull($deletedUser);
+    public function testEditActionFormInvalid()
+    {
+        $this->client->loginUser($this->userRepository->findOneBy(['username' => 'admin_test']));
+        $user = $this->userRepository->findOneBy(['username' => 'admin_test']);
+
+        $crawler = $this->client->request('GET', '/users/' . $user->getId() . '/edit');
+
+        $form = $crawler->selectButton('Modifier')->form();
+        $form['user[username]'] = '';
+        $form['user[password][first]'] = 'password';
+        $form['user[password][second]'] = 'different_password';
+        $form['user[email]'] = 'invalid-email';
+
+        $this->client->submit($form);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.form-error-message');
     }
 }

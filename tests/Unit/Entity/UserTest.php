@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\User;
+use App\Entity\Task;
 use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
@@ -13,6 +14,11 @@ class UserTest extends TestCase
     {
         parent::setUp();
         $this->user = new User();
+    }
+
+    public function testId()
+    {
+        $this->assertNull($this->user->getId());
     }
 
     public function testDefaultRole()
@@ -63,5 +69,55 @@ class UserTest extends TestCase
     {
         $this->user->eraseCredentials();
         $this->addToAssertionCount(1);
+    }
+
+    public function testGetSalt()
+    {
+        $this->assertNull($this->user->getSalt());
+    }
+
+    public function testTask()
+    {
+        $this->assertInstanceOf(\Doctrine\Common\Collections\Collection::class, $this->user->getTask());
+        $this->assertCount(0, $this->user->getTask());
+
+        $task = $this->createMock(Task::class);
+        $this->user->addTask($task);
+        $this->assertCount(1, $this->user->getTask());
+        $this->assertTrue($this->user->getTask()->contains($task));
+
+        $this->user->removeTask($task);
+        $this->assertCount(0, $this->user->getTask());
+        $this->assertFalse($this->user->getTask()->contains($task));
+    }
+
+    public function testAddTaskTwice()
+    {
+        $task = $this->createMock(Task::class);
+        $task->expects($this->once())
+             ->method('setUser')
+             ->with($this->equalTo($this->user));
+
+        $this->user->addTask($task);
+        $this->user->addTask($task);
+        $this->assertCount(1, $this->user->getTask());
+    }
+
+    public function testRemoveTaskNotOwner()
+    {
+        $task = $this->createMock(Task::class);
+        $task->expects($this->once())
+             ->method('getUser')
+             ->willReturn(null);
+
+        $this->user->addTask($task);
+        $this->user->removeTask($task);
+        $this->assertCount(0, $this->user->getTask());
+    }
+
+    public function testMagicCall()
+    {
+        $this->expectException(\Error::class);
+        $this->user->nonExistentMethod();
     }
 }
