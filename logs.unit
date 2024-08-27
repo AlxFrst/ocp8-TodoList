@@ -1,0 +1,190 @@
+PHPUnit 10.5.30 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.1.12-1ubuntu4.3 with PCOV 1.0.11
+Configuration: /home/ubuntu/ocp8-TodoList/phpunit.xml
+
+EEEEEEEEEEEEEEEEEE...................F                            38 / 38 (100%)
+
+Time: 00:00.166, Memory: 14.00 MB
+
+There was 1 PHPUnit test runner deprecation:
+
+1) Your XML configuration validates against a deprecated schema. Migrate your XML configuration using "--migrate-configuration"!
+
+--
+
+There were 18 errors:
+
+1) App\Tests\Controller\DefaultControllerTest::testIndexAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\DefaultControllerTest::createKernel()" or "App\Tests\Controller\DefaultControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/DefaultControllerTest.php:11
+
+2) App\Tests\Controller\SecurityControllerTest::testLoginAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\SecurityControllerTest::createKernel()" or "App\Tests\Controller\SecurityControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/SecurityControllerTest.php:16
+
+3) App\Tests\Controller\SecurityControllerTest::testLoginActionWithError
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\SecurityControllerTest::createKernel()" or "App\Tests\Controller\SecurityControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/SecurityControllerTest.php:16
+
+4) App\Tests\Controller\SecurityControllerTest::testLoginCheck
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\SecurityControllerTest::createKernel()" or "App\Tests\Controller\SecurityControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/SecurityControllerTest.php:16
+
+5) App\Tests\Controller\SecurityControllerTest::testLogoutCheck
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\SecurityControllerTest::createKernel()" or "App\Tests\Controller\SecurityControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/SecurityControllerTest.php:16
+
+6) App\Tests\Controller\SecurityControllerTest::testAuthenticatedUserCannotAccessLoginPage
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\SecurityControllerTest::createKernel()" or "App\Tests\Controller\SecurityControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/SecurityControllerTest.php:16
+
+7) App\Tests\Controller\TaskControllerTest::testListAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+8) App\Tests\Controller\TaskControllerTest::testListActionDone
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+9) App\Tests\Controller\TaskControllerTest::testCreateAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+10) App\Tests\Controller\TaskControllerTest::testEditAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+11) App\Tests\Controller\TaskControllerTest::testToggleTaskAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+12) App\Tests\Controller\TaskControllerTest::testDeleteTaskAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+13) App\Tests\Controller\TaskControllerTest::testExpiredTaskDeletion
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\TaskControllerTest::createKernel()" or "App\Tests\Controller\TaskControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/TaskControllerTest.php:20
+
+14) App\Tests\Controller\UserControllerTest::testListAction
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\UserControllerTest::createKernel()" or "App\Tests\Controller\UserControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/UserControllerTest.php:18
+
+15) App\Tests\Controller\UserControllerTest::testCreateActionSuccess
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\UserControllerTest::createKernel()" or "App\Tests\Controller\UserControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/UserControllerTest.php:18
+
+16) App\Tests\Controller\UserControllerTest::testCreateActionFormInvalid
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\UserControllerTest::createKernel()" or "App\Tests\Controller\UserControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/UserControllerTest.php:18
+
+17) App\Tests\Controller\UserControllerTest::testEditActionSuccess
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\UserControllerTest::createKernel()" or "App\Tests\Controller\UserControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/UserControllerTest.php:18
+
+18) App\Tests\Controller\UserControllerTest::testEditActionFormInvalid
+LogicException: You must set the KERNEL_CLASS environment variable to the fully-qualified class name of your Kernel in phpunit.xml / phpunit.xml.dist or override the "App\Tests\Controller\UserControllerTest::createKernel()" or "App\Tests\Controller\UserControllerTest::getKernelClass()" method.
+
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:62
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:126
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/KernelTestCase.php:81
+/home/ubuntu/ocp8-TodoList/vendor/symfony/framework-bundle/Test/WebTestCase.php:46
+/home/ubuntu/ocp8-TodoList/tests/Functional/Controller/UserControllerTest.php:18
+
+--
+
+There was 1 failure:
+
+1) App\Tests\Unit\Entity\UserTest::testMagicCall
+Failed asserting that exception of type "Error" is thrown.
+
+ERRORS!
+Tests: 38, Assertions: 46, Errors: 18, Failures: 1, Deprecations: 1.
+
+Generating code coverage report in HTML format ... done [00:00.168]
