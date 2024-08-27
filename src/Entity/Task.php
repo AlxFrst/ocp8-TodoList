@@ -46,6 +46,8 @@ class Task
      */
     private $user;
 
+    private $userSet = false;
+
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -121,7 +123,10 @@ class Task
 
     public function setUser(?User $user): self
     {
-        $this->user = $user;
+        if (!$this->userSet) {
+            $this->user = $user;
+            $this->userSet = true;
+        }
 
         return $this;
     }
