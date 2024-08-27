@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1724747982">
-  <project timestamp="1724747982">
+<coverage generated="1724748586">
+  <project timestamp="1724748586">
     <file name="/home/ubuntu/ocp8-TodoList/src/Controller/DefaultController.php">
       <class name="App\Controller\DefaultController" namespace="global">
         <metrics complexity="1" methods="1" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="1" coveredstatements="0" elements="2" coveredelements="0"/>
