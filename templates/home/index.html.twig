@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block header_title %}
+	<header class="container">
+		<h1 class="display-1 text-center">Bienvenue sur Todo List</h1>
+		<p class="lead text-center">L'application qui simplifie la gestion de vos tâches au quotidien</p>
+	</header>
+{% endblock %}
+
+{% block header_img %}
+	<img class="img-fluid" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list">
+{% endblock %}
+{% block body %}
+	<div class="container d-flex flex-lg-row flex-column justify-content-evenly align-items-evenly ">
+			<a href="{{ path('task_create') }}" class="btn btn-success btn-lg btn-block responsive-width mt-2">Créer une nouvelle tâche</a>
+			<a href="{{ path('task_list_undone') }}" class="btn btn-primary btn-lg btn-block responsive-width mt-2">Liste des tâches à faire</a>
+			<a href="{{ path('task_list_done') }}" class="btn btn-secondary btn-lg btn-block responsive-width mt-2" >Liste des tâches terminées</a>
+	</div>
+{% endblock %}

@@ -1,63 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block header_title %}
-	<h1 class="mb-4">Créer une nouvelle tâche</h1>
-{% endblock %}
-
 {% block body %}
-	<div class="row justify-content-center">
-		<div class="col-md-8">
-			{{ form_start(form, {'action' : path('task_create')}) }}
-			<div class="mb-3">
-				{{ form_label(form.title, 'Titre de la tâche', {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le titre de la tâche'}}) }}
-				{{ form_errors(form.title) }}
-			</div>
-			<div class="mb-3">
-				{{ form_label(form.content, 'Description', {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.content, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la description de la tâche'}}) }}
-				{{ form_errors(form.content) }}
-			</div>
-			<div class="mb-3">
-				{{ form_label(form.deadline, 'Date limite', {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.deadline, {
-                    'attr': {
-                        'class': 'form-control',
-                        'id': 'task_deadline'
-                    }
-                }) }}
-				{{ form_errors(form.deadline) }}
-			</div>
-			<div class="text-end">
-				<button type="submit" class="btn btn-action">
-					<i class="fas fa-plus-circle me-2"></i>Ajouter la tâche
-				</button>
-			</div>
-			{{ form_end(form) }}
+    <div class="container">
+        {{ form_start(form, {'action' : path('task_create'), 'attr': {'data-turbo': 'false'}}) }}
+            {{ form_label(form.title, 'Titre de la tâche') }}
+            {{ form_widget(form.title) }}
+            {{ form_errors(form.title) }}
+            {{ form_label(form.content, 'Description de la tâche') }}
+            {{ form_widget(form.content) }}
+            {{ form_errors(form.content) }}
 
-			<div class="mt-4 text-center">
-				<a href="{{ path('task_list') }}" class="btn btn-action">
-					<i class="fas fa-arrow-left me-2"></i>Retour à la liste des tâches
-				</a>
-			</div>
-		</div>
-	</div>
+            <button type="submit" class="btn btn-success pull-right mt-2">Créer la tâche</button>
+        {{ form_end(form) }}
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-var deadlineField = document.getElementById('task_deadline');
-
-// Définir la date minimum à aujourd'hui
-var today = new Date().toISOString().split('T')[0];
-deadlineField.setAttribute('min', today);
-
-// Vérifier la date à chaque changement
-deadlineField.addEventListener('change', function () {
-if (this.value < today) {
-alert('La date limite ne peut pas être dans le passé.');
-this.value = '';
-}
-});
-});
-	</script>
+        <a href="{{ path('task_list_undone') }}" class="btn btn-primary mt-2">Retour à la liste des tâches à faire</a>
+    </div>
 {% endblock %}

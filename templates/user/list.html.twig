@@ -1,118 +1,131 @@
 {% extends 'base.html.twig' %}
 
-{% block header_title %}
-	<h1 class="mb-4">
-		<i class="fas fa-users me-2"></i>Liste des utilisateurs
-	</h1>
+{% block stylesheets %}
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-	<div class="mb-4">
-		<a href="{{ path('user_create') }}" class="btn btn-action">
-			<i class="fas fa-user-plus me-2"></i>Créer un utilisateur
-		</a>
-	</div>
+	<style>
+		.user-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			gap: 20px;
+		}
 
-	<div class="mb-4">
-		<input type="text" id="userSearch" class="form-control" placeholder="Rechercher un utilisateur...">
-	</div>
+		.user-card {
+			background-color: #fff;
+			border-radius: 12px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			transition: all 0.3s ease;
+		}
 
-	{% if users|length == 0 %}
-		<div class="alert alert-warning" role="alert">
-			<i class="fas fa-exclamation-triangle me-2"></i>Il n'y a pas encore d'utilisateur enregistré.
+		.user-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+		}
+
+		.user-card-content {
+			padding: 20px;
+		}
+
+		.user-name {
+			margin-bottom: 10px;
+			font-size: 18px;
+			font-weight: bold;
+		}
+
+		.user-email {
+			color: #666;
+			margin-bottom: 15px;
+		}
+
+		.user-card-actions {
+			display: flex;
+			justify-content: center;
+			padding: 10px 20px;
+			background-color: #f8f9fa;
+			border-top: 1px solid #eee;
+		}
+
+		.user-card-actions button {
+			padding: 5px 10px;
+			font-size: 12px;
+		}
+	</style>
+
+	<div class="container">
+		<header class="d-flex justify-content-between align-items-center my-4">
+			<h1 class="h2 fw-light">Liste des utilisateurs</h1>
+			<a href="{{ path('user_create') }}" class="btn btn-outline-primary">
+				<i class="fas fa-plus me-2"></i>
+				Créer un utilisateur
+			</a>
+		</header>
+
+		<div class="search-container mb-4">
+			<input type="text" id="userSearch" class="form-control" placeholder="Rechercher un utilisateur...">
 		</div>
-	{% else %}
-		<div id="userList" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-			{% for user in users %}
-				<div class="col user-col">
-					<div class="card h-100 shadow-sm user-card" data-username="{{ user.username|lower }}">
-						<div class="card-body">
-							<h5 class="card-title">
-								<i class="fas fa-user me-2"></i>
-								{{ user.username }}
-							</h5>
-							<p class="card-text">
-								<small class="text-muted">
-									<i class="fas fa-envelope me-2"></i>
-									{{ user.email }}
-								</small>
-							</p>
-							<p class="card-text">
-								<strong>Rôles :</strong><br>
-								{% for role in user.roles %}
-									{% if role == 'ROLE_ADMIN' %}
-										<span class="badge bg-danger">Admin</span>
-									{% elseif role == 'ROLE_USER' %}
-										<span class="badge bg-primary">Utilisateur</span>
-									{% endif %}
-								{% endfor %}
-							</p>
+
+		{% if users|length == 0 %}
+			<div class="alert alert-warning" role="alert">
+				Il n'y a pas encore d'utilisateur enregistré.
+				<a href="{{ path('user_create') }}" class="btn btn-warning pull-right">Créer un utilisateur</a>
+			</div>
+		{% else %}
+			<div class="user-grid">
+				{% for user in users %}
+					<div class="user-card">
+						<div class="user-card-content">
+							<h4 class="user-name">{{ user.username }}</h4>
+							<p class="user-email">{{ user.email }}</p>
 						</div>
-						<div class="card-footer bg-transparent border-top-0">
-							<a href="{{ path('user_edit', {'id' : user.id}) }}" class="btn btn-action">
-								<i class="fas fa-edit me-2"></i>Éditer
-							</a>
+						<div class="user-card-actions">
+							{% set roleUser = "user" %}
+							{% for role in user.roles %}
+								{% if role == "ROLE_ADMIN" %}
+									{% set roleUser = "admin" %}
+								{% endif %}
+							{% endfor %}
+							{% if roleUser ==  'admin' %}
+								<a href="{{ path('user_role_user', {'id' : user.id}) }}" class="btn btn-outline-success btn-sm">
+									<i class="fas fa-user me-1"></i>
+									User
+								</a>
+							{% elseif roleUser == 'user' %}
+								<a href="{{ path('user_role_admin', {'id' : user.id}) }}" class="btn btn-outline-danger btn-sm">
+									<i class="fas fa-user-shield me-1"></i>
+									Admin
+								</a>
+							{% endif %}
 						</div>
 					</div>
-				</div>
-			{% endfor %}
-		</div>
-	{% endif %}
+				{% endfor %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}
 
+{% block javascripts %}
 	<script>
-		console.log("Script de recherche chargé");
-
-function filterUsers() {
+		document.addEventListener('DOMContentLoaded', function () {
 const searchInput = document.getElementById('userSearch');
-const userCols = document.querySelectorAll('.user-col');
-const userList = document.getElementById('userList');
+const userCards = document.querySelectorAll('.user-card');
 
-if (! searchInput || userCols.length === 0 || ! userList) {
-console.error("Éléments nécessaires non trouvés");
-return;
-}
+searchInput.addEventListener('input', function () {
+const searchTerm = this.value.toLowerCase();
 
-const searchTerm = searchInput.value.toLowerCase().trim();
-let visibleCards = 0;
+userCards.forEach(card => {
+const username = card.querySelector('.user-name').textContent.toLowerCase();
+const email = card.querySelector('.user-email').textContent.toLowerCase();
 
-userCols.forEach(col => {
-const card = col.querySelector('.user-card');
-const username = card.dataset.username;
-if (username.includes(searchTerm)) {
-col.style.display = '';
-visibleCards++;
+if (username.includes(searchTerm) || email.includes(searchTerm)) {
+card.style.display = '';
 } else {
-col.style.display = 'none';
+card.style.display = 'none';
 }
 });
-
-updateNoResultsMessage(visibleCards, userList);
-}
-
-function updateNoResultsMessage(visibleCards, userList) {
-let noResults = document.getElementById('noResults');
-if (visibleCards === 0) {
-if (! noResults) {
-noResults = document.createElement('div');
-noResults.id = 'noResults';
-noResults.className = 'alert alert-info col-12';
-noResults.textContent = 'Aucun utilisateur trouvé.';
-userList.appendChild(noResults);
-}
-} else if (noResults) {
-noResults.remove();
-}
-}
-
-// Attendre que le DOM soit complètement chargé
-document.addEventListener('DOMContentLoaded', function () {
-const searchInput = document.getElementById('userSearch');
-if (searchInput) {
-searchInput.addEventListener('input', filterUsers);
-console.log("Écouteur d'événements ajouté à la barre de recherche");
-} else {
-console.error("Barre de recherche non trouvée");
-}
+});
 });
 	</script>
 {% endblock %}

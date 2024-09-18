@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+	<style>
+	.task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.task-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-card-content {
+    padding: 20px;
+}
+
+.task-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.task-content {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.task-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.task-card-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.task-card-actions form {
+    margin: 0;
+}
+
+.task-card-actions button {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+</style>
+	<div class="container">
+		<header class="d-flex justify-content-between align-items-center my-4">
+			<h1 class="h2 fw-light">Tâches terminées</h1>
+			<a href="{{ path('task_create') }}" class="btn btn-outline-primary">
+				<i class="fas fa-plus me-2"></i>
+				Créer une tâche
+			</a>
+		</header>
+
+		<div class="task-grid">
+			{% for task in tasks %}
+				{% if task.isDone %}
+					<div class="task-card">
+						<div class="task-card-content">
+							<h4 class="task-title">
+								<a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a>
+							</h4>
+							<p class="task-content">{{ task.content }}</p>
+							<div class="task-meta">
+								<small class="text-muted">{{ task.createdAt|date('Y-m-d H:i:s') }}</small>
+								{% if task.author.username == 'Anonyme'%}
+									<span class="badge bg-secondary">Anonyme</span>
+								{% endif %}
+							</div>
+						</div>
+						<div class="task-card-actions">
+							<form action="{{ path('task_toggle', {'id' : task.id }) }}">
+								<button class="btn btn-sm btn-outline-warning">
+									<i class="fas fa-check me-1"></i>
+									Marquer comme non faite
+								</button>
+							</form>
+							<form action="{{ path('task_delete', {'id' : task.id }) }}">
+								<button class="btn btn-sm btn-outline-danger">
+									<i class="fas fa-trash"></i>
+								</button>
+							</form>
+						</div>
+					</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
+{% endblock %}

@@ -2,143 +2,102 @@
 
 namespace App\Entity;
 
+use App\Repository\TaskRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Entity(repositoryClass="App\Repository\TaskRepository")
- * @ORM\Table
- */
+
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(message="Vous devez saisir un titre.")
-     */
-    private $title;
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="Vous devez saisir du contenu.")
-     */
-    private $content;
+    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 8)]
+    private ?string $content = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isDone;
+    #[ORM\Column]
+    private ?bool $isDone = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="task")
-     */
-    private $user;
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $author = null;
 
-    private $userSet = false;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $deadline;
-
-    public function __construct()
-    {
-        $this->createdAt = new \Datetime();
-        $this->isDone = false;
-    }
-
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCreatedAt()
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function setTitle($title)
+    public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
     }
 
-    public function getContent()
+    public function getContent(): ?string
     {
         return $this->content;
     }
 
-    public function setContent($content)
+    public function setContent(string $content): static
     {
         $this->content = $content;
+
+        return $this;
     }
 
-    public function isDone()
+    public function isIsDone(): ?bool
     {
         return $this->isDone;
     }
 
-    public function toggle($flag)
-    {
-        $this->isDone = $flag;
-    }
-
-    public function getIsDone(): ?bool
-    {
-        return $this->isDone;
-    }
-
-    public function setIsDone(bool $isDone): self
+    public function setIsDone(bool $isDone): static
     {
         $this->isDone = $isDone;
 
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getAuthor(): ?User
     {
-        return $this->user;
+        return $this->author;
     }
 
-    public function setUser(?User $user): self
+    public function setAuthor(?User $author): static
     {
-        if (!$this->userSet) {
-            $this->user = $user;
-            $this->userSet = true;
-        }
+        $this->author = $author;
 
-        return $this;
-    }
-
-    public function getDeadline(): ?\DateTimeInterface
-    {
-        return $this->deadline;
-    }
-
-    public function setDeadline(?\DateTimeInterface $deadline): self
-    {
-        $this->deadline = $deadline;
         return $this;
     }
 }

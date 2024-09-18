@@ -1,26 +1,36 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}
+	Connexion
+{% endblock %}
+
 {% block body %}
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+	<form class="container col-12 col-md-8 col-lg-6 col-xl-5 " method="post">
+		{% if error %}
+			<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+		{% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.email }}, <a href="{{ path('logout') }}">Logout</a>
-        </div>
-    {% endif %}
+		{% if app.user %}
+			<div class="mb-3">
+                <p>Connecté en tant que {{ app.user.email }}</p>
+				<a href="{{ path('app_logout') }}">Se déconnecter</a>
+			</div>
+		{% endif %}
 
-    <form method="post">
-        <label for="username">Email : </label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}" />
+		<h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
 
-        <label for="password">Mot de passe :</label>
-        <input type="password" id="password" name="_password" />
-        <input type="hidden" name="_csrf_token"
-               value="{{ csrf_token('authenticate') }}"
-        >
+		<div class="form-outline form-white mb-4">
+			<label class="form-label" for="inputEmail">Email</label>
+			<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+		</div>
 
-        <button class="btn btn-success" type="submit">Se connecter</button>
-    </form>
+		<div class="form-outline form-white mb-4">
+			<label class="form-label" for="inputPassword">Mot de passe</label>
+			<input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+		</div>
+
+		<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+		<button class="btn btn-lg btn-primary" type="submit">Se connecter</button>
+	</form>
 {% endblock %}

@@ -2,32 +2,33 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserVoter extends Voter
 {
-    const USER_EDIT = 'user_edit';
-    const USER_DELETE = 'user_delete';
-    const USER_VIEW = 'user_view';
+    public const EDIT = 'USER_EDIT';
+    public const VIEW = 'USER_VIEW';
 
-    private Security $security;
-
-    public function __construct(Security $security)
+    private function isAdmin(mixed $subject, UserInterface $user): bool
     {
-        $this->security = $security;
+        if (in_array('ROLE_ADMIN',$user->getRoles())) {
+            return true;
+        }
+        return false;
     }
 
-    protected function supports(string $attribute, $subject): bool
+    protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::USER_EDIT, self::USER_DELETE, self::USER_VIEW])
-            && $subject instanceof User;
+        // replace with your own logic
+        // https://symfony.com/doc/current/security/voters.html
+        return in_array($attribute, [self::EDIT, self::VIEW])
+            && $subject instanceof \App\Entity\User;
     }
 
-    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
         // if the user is anonymous, do not grant access
@@ -35,47 +36,18 @@ class UserVoter extends Voter
             return false;
         }
 
-        // you know $subject is a User object, thanks to `supports()`
-        /** @var User $userSubject */
-        $userSubject = $subject;
-
+        // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
-            case self::USER_VIEW:
-                return $this->canView($userSubject, $user);
-            case self::USER_EDIT:
-                return $this->canEdit($userSubject, $user);
-            case self::USER_DELETE:
-                return $this->canDelete($userSubject, $user);
+            case self::EDIT:
+                // logic to determine if the user can EDIT
+                return $this->isAdmin($subject, $user);
+                break;
+            case self::VIEW:
+                // logic to determine if the user can VIEW
+                return $this->isAdmin($subject, $user);
+                break;
         }
 
         return false;
-    }
-
-    private function canView(User $userSubject, UserInterface $user): bool
-    {
-        // Admins can view all users
-        if ($this->security->isGranted('ROLE_ADMIN')) {
-            return true;
-        }
-
-        // Users can view their own profile
-        return $user === $userSubject;
-    }
-
-    private function canEdit(User $userSubject, UserInterface $user): bool
-    {
-        // Admins can edit all users
-        if ($this->security->isGranted('ROLE_ADMIN')) {
-            return true;
-        }
-
-        // Users can edit their own profile
-        return $user === $userSubject;
-    }
-
-    private function canDelete(User $userSubject, UserInterface $user): bool
-    {
-        // Only admins can delete users
-        return $this->security->isGranted('ROLE_ADMIN');
     }
 }

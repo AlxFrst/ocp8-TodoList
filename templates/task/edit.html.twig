@@ -1,40 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block header_title %}
-	<h1 class="mb-4">Modifier la tâche</h1>
-{% endblock %}
-
 {% block body %}
-	<div class="row justify-content-center">
-		<div class="col-md-8">
-			{{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
-			<div class="mb-3">
-				{{ form_label(form.title, 'Titre de la tâche', {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le titre de la tâche'}}) }}
-				{{ form_errors(form.title) }}
-			</div>
-			<div class="mb-3">
-				{{ form_label(form.content, 'Description', {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.content, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la description de la tâche'}}) }}
-				{{ form_errors(form.content) }}
-			</div>
-			<div class="mb-3">
-				{{ form_label(form.deadline, 'Date limite', {'label_attr': {'class': 'form-label'}}) }}
-				{{ form_widget(form.deadline, {'attr': {'class': 'form-control'}}) }}
-				{{ form_errors(form.deadline) }}
-			</div>
-			<div class="text-end">
-				<button type="submit" class="btn btn-action">
-					<i class="fas fa-save me-2"></i>Enregistrer les modifications
-				</button>
-			</div>
-			{{ form_end(form) }}
+    <div class="row">
+        {{ form_start(form, {'action' : path('task_edit', { 'id' : task.id })}) }}
+            {{ form_widget(form) }}
 
-			<div class="mt-4 text-center">
-				<a href="{{ path('task_list') }}" class="btn btn-action">
-					<i class="fas fa-arrow-left me-2"></i>Retour à la liste des tâches
-				</a>
-			</div>
-		</div>
-	</div>
+            <button type="submit" class="btn btn-success pull-right">Modifier</button>
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

@@ -3,131 +3,205 @@
 namespace App\Controller;
 
 use App\Entity\Task;
-use App\Form\TaskType;
+use App\Form\TaskType as FormTaskType;
 use App\Repository\TaskRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
-use App\Service\ExpiredTaskService;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TaskController extends AbstractController
 {
-    private $expiredTaskService;
-    public function __construct(ExpiredTaskService $expiredTaskService)
-    {
-        $this->expiredTaskService = $expiredTaskService;
-    }
+    
     /**
-     * @Route("/tasks", name="task_list")
+     * Displays a list of tasks Undone.
+     *
+     * This function retrieves a list of all tasks from the database and renders the task list view with the obtained data.
+     *
+     * @param TaskRepository $taskRepository The task repository to fetch tasks from the database.
+     * @return Response A response containing the rendered task list view.
      */
-    public function listAction(TaskRepository $taskRepository)
+    #[Route('/tasks/undone', name: 'task_list_undone')]
+    public function listOfUndoneTasks( TaskRepository $taskRepository, Security $security, TranslatorInterface $translator): Response
     {
-        // Supprime les tâches expirées
-        $deletedCount = $this->expiredTaskService->deleteExpiredTasks();
-
-        // Si des tâches ont été supprimées, ajoutez un message flash
-        if ($deletedCount > 0) {
-            $this->addFlash('info', "$deletedCount tâche(s) expirée(s) ont été supprimées.");
+        $user = $security->getUser();
+        if (!$user instanceof UserInterface) {
+            $this->addFlash('error', 'Vous devez être connecté pour voir vos tâches');
+            return $this->redirectToRoute('app_home');
         }
 
-        $tasks = $taskRepository->findBy(['isDone' => 0]);
-        return $this->render('task/list.html.twig', ['tasks' => $tasks]);
+        $taskList =  $taskRepository->findByRoleAndStatus($user, false);
+        return $this->render('task/list-undone.html.twig', [
+            'controller_name' => 'TaskController',
+            'tasks' => $taskList,
+        ]);
     }
 
     /**
-     * @Route("/tasks_done", name="task_done")
+     * Displays a list of tasks done.
+     *
+     * This function retrieves a list of all tasks from the database and renders the task list view with the obtained data.
+     *
+     * @param TaskRepository $taskRepository The task repository to fetch tasks from the database.
+     * @return Response A response containing the rendered task list view.
      */
-    public function listActionDone(TaskRepository $taskRepository)
+    #[Route('/tasks/done', name: 'task_list_done')]
+    public function listOfDoneTasks( TaskRepository $taskRepository, Security $security, TranslatorInterface $translator): Response
     {
-        // Supprime les tâches expirées
-        $deletedCount = $this->expiredTaskService->deleteExpiredTasks();
-
-        // Si des tâches ont été supprimées, ajoutez un message flash
-        if ($deletedCount > 0) {
-            $this->addFlash('info', "$deletedCount tâche(s) expirée(s) ont été supprimées.");
+        $user = $security->getUser();
+        if (!$user instanceof UserInterface) {
+            $this->addFlash('error', 'Vous devez être connecté pour voir vos tâches');
+            return $this->redirectToRoute('app_home');
         }
 
-        $tasks = $taskRepository->findBy(['isDone' => 1]);
-        return $this->render('task/list.html.twig', ['tasks' => $tasks]);
+        $taskList =  $taskRepository->findByRoleAndStatus($user, true);
+        return $this->render('task/list-done.html.twig', [
+            'controller_name' => 'TaskController',
+            'tasks' => $taskList,
+        ]);
     }
 
-
     /**
-     * @Route("/tasks/create", name="task_create")
+     * Creates a new task.
+     *
+     * This function creates a new task based on the form data submitted.
+     * If the user does not have the necessary rights to create a task, they are    redirected to the task list with an error message.
+     * After creating the task, the user is redirected to the task list with a success  message.
+     *
+     * @param Request $request The HTTP request.
+     * @param EntityManagerInterface $entityManager The entity manager to perform create    operations.
+     * @param Security $security The security component to access user information.
+     * @return Response A response containing the form to create a task or a redirect   response to the task list.
      */
-    public function createAction(Request $request, EntityManagerInterface $entityManager, Security $security)
+    #[Route('/tasks/create', name: "task_create")]
+    public function createAction(Request $request, EntityManagerInterface $entityManager, Security $security, TranslatorInterface $translator)
     {
         $task = new Task();
-        $form = $this->createForm(TaskType::class, $task);
-
+        if (!$this->isGranted('TASK_CREATE', $task)) {
+            $this->addFlash('error', 'Vous devez être connecté pour créer une tâche');
+            return $this->redirectToRoute('task_list_undone');
+        }
+        $form = $this->createForm(FormTaskType::class, $task);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            $user = $security->getUser();
-            $task->setUser($user);
+            $task->setCreatedAt(new DateTimeImmutable());
+            $task->setIsDone(false);
+            $task->setAuthor($security->getUser());
             $entityManager->persist($task);
             $entityManager->flush();
 
-            $this->addFlash('success', 'La tâche a été bien été ajoutée.');
+            $this->addFlash('success', 'La tâche a été bien été ajoutée');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_undone');
         }
-
-        return $this->render('task/create.html.twig', ['form' => $form->createView()]);
+        return $this->render('task/create.html.twig', [
+            'task' => $task,
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
-     * @Route("/tasks/{id}/edit", name="task_edit")
+     * Edits a task.
+     *
+     * This function allows editing of a specified task based on its identifier.
+     * If the user does not have the necessary rights to edit the task, they are    redirected to the task list with an error message.
+     * After editing the task, the user is redirected to the task list with a success   message.
+     *
+     * @param Task $task The task to edit.
+     * @param Request $request The HTTP request.
+     * @param EntityManagerInterface $entityManager The entity manager to perform edit  operations.
+     * @return Response A response containing the form to edit the task or a redirect   response to the task list.
      */
-    public function editAction(Task $task, Request $request)
+    #[Route('/tasks/{id}/edit', name: "task_edit")]
+    public function editAction(Task $task, Request $request, EntityManagerInterface $entityManager, TranslatorInterface $translator)
     {
-        $this->denyAccessUnlessGranted('task_edit', $task);
-        $form = $this->createForm(TaskType::class, $task);
+        if (!$this->isGranted('TASK_EDIT', $task)) {
+            $this->addFlash('error', 'Vous ne pouvez pas modifier cette tâche');
+            return $this->redirectToRoute('task_list_undone');
+        }
+        $form = $this->createForm(FormTaskType::class, $task);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $task->setIsDone(false);
+            $entityManager->persist($task);
+            $entityManager->flush();
 
-            $this->addFlash('success', 'La tâche a bien été modifiée.');
+            $this->addFlash('success', 'La tâche a bien été modifiée');
 
-            return $this->redirectToRoute('task_list');
+            return $this->redirectToRoute('task_list_undone');
         }
+
+
 
         return $this->render('task/edit.html.twig', [
             'form' => $form->createView(),
             'task' => $task,
         ]);
     }
-
+    
     /**
-     * @Route("/tasks/{id}/toggle", name="task_toggle")
+     * Toggles the status of a task.
+     *
+     * This function toggles the status (done or not done) of a specified task based on     its identifier.
+     * After toggling the status, the user is redirected to the task list with a success    message.
+     *
+     * @param Task $task The task to toggle.
+     * @param EntityManagerInterface $entityManager The entity manager to perform toggle    operations.
+     * @return RedirectResponse A redirect response to the task list.
      */
-    public function toggleTaskAction(Task $task)
+    #[Route('/tasks/{id}/toggle', name: "task_toggle")]
+    public function toggleTaskAction(Task $task, EntityManagerInterface $entityManager, TranslatorInterface $translator)
     {
-        $task->toggle(!$task->isDone());
-        $this->getDoctrine()->getManager()->flush();
+        $task->setIsDone(!$task->isIsDone());
+        
+        $entityManager->persist($task);
+        $entityManager->flush();
+        if ($task->isIsDone()) {
+            $this->addFlash('success', 'La tâche a bien été marquée comme faite');
+            return $this->redirectToRoute('task_list_done');
+        } else {
+            $this->addFlash('success', 'La tâche a bien été marquée comme non faite');
+            return $this->redirectToRoute('task_list_undone');
+        }
+        
 
-        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
-
-        return $this->redirectToRoute('task_list');
+        return $this->redirectToRoute('task_list_undone');
     }
 
     /**
-     * @Route("/tasks/{id}/delete", name="task_delete")
+     * Deletes a task.
+     *
+     * This function deletes a specified task based on its identifier.
+     * If the user does not have the necessary rights to delete the task, they are  redirected to the task list with an error message.
+     * After the task is deleted, the user is redirected to the task list with a success    message.
+     *
+     * @param Task $task The task to delete.
+     * @param EntityManagerInterface $entityManager The entity manager to perform delete    operations.
+     * @return RedirectResponse A redirect response to the task list.
      */
-    public function deleteTaskAction(Task $task)
+    #[Route('/tasks/{id}/delete', name: "task_delete")]
+    public function deleteTaskAction(Task $task, EntityManagerInterface $entityManager, TranslatorInterface $translator)
     {
-        $this->denyAccessUnlessGranted('task_delete', $task);
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($task);
-        $em->flush();
 
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
+        if (!$this->isGranted('TASK_DELETE', $task)) {
+            
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer cette tâche');
+            return $this->redirectToRoute('task_list_undone');
+        }
+        
+        $entityManager->remove($task);
+        $entityManager->flush();
 
-        return $this->redirectToRoute('task_list');
+        $this->addFlash('success', 'La tâche a bien été supprimée');
+        return $this->redirectToRoute('task_list_undone');
     }
+
 }
